@@ -1,4 +1,47 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+
+// Componentes estilizados
+const StyledApp = styled.div`
+  font-family: Arial, sans-serif;
+  padding: 20px;
+`;
+
+const StyledHeader = styled.h1`
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+
+  input,
+  select {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+`;
+
+const StyledMenuItem = styled.li`
+  margin-bottom: 10px;
+
+  button {
+    margin-left: 10px;
+    background-color: #dc3545;
+  }
+`;
+
 
 const App = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -101,9 +144,9 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Menú del Restaurante Tattler</h1>
-      <form onSubmit={handleSubmit}>
+    <StyledApp>
+      <StyledHeader>Tattler | Menú</StyledHeader>
+      <StyledForm onSubmit={handleSubmit}>
         <input
           type="number"
           placeholder="ID del platillo"
@@ -134,7 +177,7 @@ const App = () => {
         </select>
 
         <button type="submit">{selectedItem ? 'Editar Platillo' : 'Agregar Platillo'}</button>
-      </form>
+      </StyledForm>
 
       <h2>Filtrar por Categoría:</h2>
       <select
@@ -159,14 +202,14 @@ const App = () => {
 
       <ul>
         {menuItems.map((item) => (
-          <li key={item._id}>
+          <StyledMenuItem key={item._id}>
             {item.name} - ${item.price}
             <button onClick={() => handleEdit(item)}>Editar</button>
             <button onClick={() => handleDelete(item._id)}>Borrar</button>
-          </li>
+          </StyledMenuItem>
         ))}
       </ul>
-    </div>
+    </StyledApp>
   );
 };
 
