@@ -8,7 +8,7 @@ const App = () => {
   // Función para obtener los menús del servidor
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('/menu'); // La ruta que configuraste en el backend
+      const response = await fetch('http://localhost:3000'); // Cambiar la URL a http://localhost:3000
       const data = await response.json();
       setMenuItems(data);
     } catch (error) {
@@ -23,7 +23,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Menú del Restaurante Nao</h1>
+      <h1>Menú del Restaurante Nao / cono</h1>
       <ul>
         {menuItems.map((item) => (
           <li key={item._id}>
