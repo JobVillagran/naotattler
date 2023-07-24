@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
-const port = 3000; // Cambiar el puerto a uno que no esté en uso, por ejemplo, 3000
+const port = process.env.PORT || 3000;
 
 // Conectar a MongoDB Atlas
 const dbURI = 'mongodb+srv://nao_mongo_job:Seguridad123@naocluster.ss9flq6.mongodb.net/?retryWrites=true&w=majority';
@@ -41,8 +41,14 @@ app.get('/menu', (req, res) => {
     });
 });
 
-// Servir archivos estáticos de React desde la carpeta 'build' en el directorio raíz
-app.use(express.static(path.join(__dirname, './build')));
+// Permitir fuentes de letra desde data: y desde el servidor local
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self' data:");
+  next();
+});
+
+// Servir archivos estáticos de React desde la carpeta raíz del proyecto
+app.use(express.static(path.join(__dirname, 'build')));
 
 // Ruta principal para cargar la página de inicio de React
 app.get('/', (req, res) => {
