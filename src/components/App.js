@@ -3,12 +3,18 @@ import styled from 'styled-components';
 
 // Componentes estilizados
 const StyledApp = styled.div`
-  font-family: Arial, sans-serif;
-  padding: 20px;
+  @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+  * {
+    font-family: 'Lato', sans-serif;
+  }
+  ul {
+    padding: 0;
+  }
+  padding: 40px 200px 0;
 `;
 
 const StyledHeader = styled.h1`
-  color: #333;
+  color: #EF6C00;
   text-align: center;
   margin-bottom: 20px;
 `;
@@ -26,7 +32,7 @@ const StyledForm = styled.form`
 
   button {
     padding: 10px;
-    background-color: #007bff;
+    background-color: #00CB80;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -34,13 +40,47 @@ const StyledForm = styled.form`
 `;
 
 const StyledMenuItem = styled.li`
-  margin-bottom: 10px;
+  margin: 0;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
-  button {
-    margin-left: 10px;
-    background-color: #dc3545;
+const EditButtonWrapper = styled.span`
+  align-self: flex-end;
+  width: 200px; /* Ancho fijo */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #757575;
+  font-weight: 100;
+
+  &::first-letter {
+    text-transform: uppercase;
   }
 `;
+
+const EditButton = styled.button`
+  background-color: #1E6FEB;
+  color: white;
+  margin-right: 10px;
+  border: none;
+  border-radius: 3px;
+  padding: 10px 20px 10px;
+`;
+
+const DeleteButton = styled.button`
+  background-color: #FF1744;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 10px 20px 10px;
+  align-self: flex-end;
+`;
+
+
+
 
 
 const App = () => {
@@ -195,6 +235,7 @@ const App = () => {
       <h2>Filtrar por Nombre de Platillo:</h2>
       <input
         type="text"
+        id="search"
         placeholder="Buscar por nombre de platillo"
         value={searchName}
         onChange={(e) => setSearchName(e.target.value)}
@@ -203,10 +244,11 @@ const App = () => {
       <ul>
         {menuItems.map((item) => (
           <StyledMenuItem key={item._id}>
-            {item.name} - ${item.price}
-            <button onClick={() => handleEdit(item)}>Editar</button>
-            <button onClick={() => handleDelete(item._id)}>Borrar</button>
-          </StyledMenuItem>
+          <EditButtonWrapper>{item.name} - ${item.price}</EditButtonWrapper>
+          <EditButton onClick={() => handleEdit(item)}>Editar</EditButton>
+          <DeleteButton onClick={() => handleDelete(item._id)}>Borrar</DeleteButton>
+        </StyledMenuItem>
+        
         ))}
       </ul>
     </StyledApp>
