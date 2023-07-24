@@ -2,10 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Conectar a MongoDB Atlas
+app.use(cors({
+  origin: 'http://localhost:3001',
+}));
+
 const dbURI = 'mongodb+srv://nao_mongo_job:Seguridad123@naocluster.ss9flq6.mongodb.net/?retryWrites=true&w=majority';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -15,25 +19,38 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log('Error en la conexión a MongoDB Atlas', err);
   });
 
-// Definir el esquema y el modelo de los menús
 const menuSchema = new mongoose.Schema({
+  id: Number,
   name: String,
   price: Number,
+  category: { type: String, enum: ['Fast Food', 'Breakfast', 'Saludable', 'Americana'] },
 });
 
 const MenuItem = mongoose.model('MenuItem', menuSchema);
 
-// Configurar EJS como motor de plantillas
 app.set('view engine', 'ejs');
 
-// Middleware para procesar los datos del formulario
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// Ruta para obtener todos los menús (usando EJS)
 app.get('/menu', (req, res) => {
-  MenuItem.find().maxTimeMS(30000)
+  const { category, name } = req.query;
+
+  const filter = {};
+
+  if (category && category !== 'Todas las categorías') {
+    filter.category = category;
+  }
+
+  MenuItem.find(filter)
     .then((menuItems) => {
-      res.render('index', { menuItems });
+      if (name && name.length >= 5) {
+        // Filtrar por nombre si se proporciona un nombre con al menos 5 caracteres
+        const nameFilter = menuItems.filter(item => item.name.toLowerCase().includes(name.toLowerCase()));
+        res.json(nameFilter);
+      } else {
+        res.json(menuItems);
+      }
     })
     .catch((err) => {
       console.log('Error al obtener los menús', err);
@@ -41,21 +58,72 @@ app.get('/menu', (req, res) => {
     });
 });
 
-// Permitir fuentes de letra desde data: y desde el servidor local
+app.post('/menu', (req, res) => {
+  const { id, name, price, category } = req.body;
+
+  if (!id || !name || !price || !category) {
+    return res.status(400).json({ error: 'Debes proporcionar un ID, un nombre, un precio y una categoría para el platillo.' });
+  }
+
+  const newMenuItem = new MenuItem({
+    id,
+    name,
+    price,
+    category,
+  });
+
+  newMenuItem.save()
+    .then((menuItem) => {
+      console.log('Platillo agregado:', menuItem);
+      res.status(201).json(menuItem);
+    })
+    .catch((err) => {
+      console.log('Error al guardar el platillo:', err);
+      res.status(500).json({ error: 'Error en el servidor al guardar el platillo.' });
+    });
+});
+
+app.put('/menu/:id', (req, res) => {
+  const { id, name, price, category } = req.body;
+
+  if (!id || !name || !price || !category) {
+    return res.status(400).json({ error: 'Debes proporcionar un ID, un nombre, un precio y una categoría para el platillo.' });
+  }
+
+  MenuItem.findByIdAndUpdate(req.params.id, { id, name, price, category }, { new: true })
+    .then((menuItem) => {
+      console.log('Platillo editado:', menuItem);
+      res.json(menuItem);
+    })
+    .catch((err) => {
+      console.log('Error al editar el platillo:', err);
+      res.status(500).json({ error: 'Error en el servidor al editar el platillo.' });
+    });
+});
+
+app.delete('/menu/:id', (req, res) => {
+  MenuItem.findByIdAndDelete(req.params.id)
+    .then((menuItem) => {
+      console.log('Platillo borrado:', menuItem);
+      res.json(menuItem);
+    })
+    .catch((err) => {
+      console.log('Error al borrar el platillo:', err);
+      res.status(500).json({ error: 'Error en el servidor al borrar el platillo.' });
+    });
+});
+
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self' data:");
   next();
 });
 
-// Servir archivos estáticos de React desde la carpeta raíz del proyecto
 app.use(express.static(path.join(__dirname, '../build')));
 
-// Ruta principal para cargar la página de inicio de React
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
-// Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor Express.js iniciado en http://localhost:${port}`);
 });
