@@ -15,12 +15,19 @@ const App = () => {
   const fetchMenuItems = async () => {
     try {
       let url = 'http://localhost:3000/menu';
+  
+      const params = [];
       if (searchCategory) {
-        url += `?category=${searchCategory}`;
+        params.push(`category=${encodeURIComponent(searchCategory)}`);
       }
       if (searchName && searchName.length >= 5) {
-        url += `&name=${searchName}`;
+        params.push(`name=${encodeURIComponent(searchName)}`);
       }
+  
+      if (params.length > 0) {
+        url += `?${params.join('&')}`;
+      }
+  
       const response = await fetch(url);
       const data = await response.json();
       setMenuItems(data);
@@ -28,6 +35,7 @@ const App = () => {
       console.log('Error al obtener los menús', error);
     }
   };
+  
 
   useEffect(() => {
     fetchMenuItems();
@@ -94,7 +102,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Menú del Restaurante Nao</h1>
+      <h1>Menú del Restaurante Tattler</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="number"

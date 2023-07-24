@@ -42,15 +42,16 @@ app.get('/menu', (req, res) => {
     filter.category = category;
   }
 
-  MenuItem.find(filter)
+  let nameFilter = {};
+
+  if (name && name.length >= 5) {
+    const nameRegex = new RegExp(name, 'i'); // 'i' indica que la búsqueda sea insensible a mayúsculas y minúsculas
+    nameFilter = { name: nameRegex };
+  }
+
+  MenuItem.find({ ...filter, ...nameFilter })
     .then((menuItems) => {
-      if (name && name.length >= 5) {
-        // Filtrar por nombre si se proporciona un nombre con al menos 5 caracteres
-        const nameFilter = menuItems.filter(item => item.name.toLowerCase().includes(name.toLowerCase()));
-        res.json(nameFilter);
-      } else {
-        res.json(menuItems);
-      }
+      res.json(menuItems);
     })
     .catch((err) => {
       console.log('Error al obtener los menús', err);
