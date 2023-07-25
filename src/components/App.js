@@ -33,15 +33,17 @@ const StyledForm = styled.form`
   input,
   select {
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
 
   button {
-    padding: 10px;
+    padding: 15px;
     background-color: #00CB80;
     color: #fff;
     border: none;
+    border-radius: 3px;
     cursor: pointer;
+    margin-bottom: 30px;
   }
 `;
 
@@ -77,7 +79,7 @@ const EditButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-  background-color: #FF1744;
+  background-color: #F2212E;
   color: white;
   border: none;
   border-radius: 3px;
@@ -220,7 +222,7 @@ const App = () => {
 
   return (
     <StyledApp>
-      <StyledHeader>Tattler | Menú</StyledHeader>
+      <StyledHeader>Tattler</StyledHeader>
       <StyledForm onSubmit={handleSubmit}>
         <input
           type="number"
