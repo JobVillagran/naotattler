@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { mobile } from "../responsive"
 
 // Componentes estilizados
 const StyledApp = styled.div`
@@ -11,12 +12,17 @@ const StyledApp = styled.div`
     padding: 0;
   }
   padding: 40px 200px 0;
+
+
+
+  ${mobile({ padding: "10px 20px 0" })}
 `;
 
 const StyledHeader = styled.h1`
   color: #EF6C00;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
+  font-weight: 300;
 `;
 
 const StyledForm = styled.form`
@@ -79,7 +85,36 @@ const DeleteButton = styled.button`
   align-self: flex-end;
 `;
 
+const FilterContainer = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-bottom: 10px;
+`;
 
+const StyledSelect = styled.select`
+  /* Estilos para el elemento select */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const StyledHeading = styled.h2`
+  color: #EF6C00;
+  font-weight: 200;
+  font-size: 18px;
+  margin-right: 20px;
+`;
+
+const SearchInput = styled.input.attrs({ id: 'search' })`
+  width: 100%;
+  height: 30px;
+  font-weight: 100;
+`;
 
 
 
@@ -219,27 +254,31 @@ const App = () => {
         <button type="submit">{selectedItem ? 'Editar Platillo' : 'Agregar Platillo'}</button>
       </StyledForm>
 
-      <h2>Filtrar por Categoría:</h2>
-      <select
-        name="searchCategory"
-        value={searchCategory}
-        onChange={(e) => setSearchCategory(e.target.value)}
-      >
+     
+      <FilterContainer>
+        <StyledHeading>Filtro x Categoría:</StyledHeading>
+        <StyledSelect
+          name="searchCategory"
+          value={searchCategory}
+          onChange={(e) => setSearchCategory(e.target.value)}
+        >
         <option value="">Todas las categorías</option>
         <option value="Fast Food">Fast Food</option>
         <option value="Breakfast">Breakfast</option>
         <option value="Saludable">Saludable</option>
         <option value="Americana">Americana</option>
-      </select>
+        </StyledSelect>
+      </FilterContainer>
 
-      <h2>Filtrar por Nombre de Platillo:</h2>
-      <input
-        type="text"
-        id="search"
-        placeholder="Buscar por nombre de platillo"
-        value={searchName}
-        onChange={(e) => setSearchName(e.target.value)}
-      />
+      <FilterContainer>
+        <StyledHeading>Filtro x Platillo</StyledHeading>
+        <SearchInput
+          type="text"
+          placeholder="Buscar por nombre de platillo"
+          value={searchName}
+          onChange={(e) => setSearchName(e.target.value)}
+        />
+      </FilterContainer>
 
       <ul>
         {menuItems.map((item) => (
