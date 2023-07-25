@@ -175,10 +175,11 @@ const App = () => {
       alert('Por favor, ingrese el nombre, el precio y la categoría del platillo.');
       return;
     }
-
+  
     try {
       let response;
       if (selectedItem) {
+        // Si selectedItem está definido, significa que estamos editando un platillo existente
         response = await fetch(`http://localhost:3000/menu/${selectedItem._id}`, {
           method: 'PUT',
           headers: {
@@ -186,7 +187,17 @@ const App = () => {
           },
           body: JSON.stringify(formValues),
         });
+        
+        // Actualizamos el platillo editado en el estado menuItems
+        setMenuItems((prevMenuItems) => {
+          const updatedMenuItems = prevMenuItems.map((item) =>
+            item._id === selectedItem._id ? { ...item, ...formValues } : item
+          );
+          return updatedMenuItems;
+        });
+  
       } else {
+        // Si selectedItem no está definido, significa que estamos agregando un nuevo platillo
         response = await fetch('http://localhost:3000/menu', {
           method: 'POST',
           headers: {
@@ -194,15 +205,18 @@ const App = () => {
           },
           body: JSON.stringify(formValues),
         });
+  
+        const data = await response.json();
+        setMenuItems([...menuItems, data]);
       }
-      const data = await response.json();
-      setMenuItems([...menuItems, data]);
+  
       setFormValues({ id: '', name: '', price: '', category: '' });
       setSelectedItem(null);
     } catch (error) {
       console.log('Error al agregar/editar el platillo', error);
     }
   };
+  
 
   const handleDelete = async (itemId) => {
     try {
